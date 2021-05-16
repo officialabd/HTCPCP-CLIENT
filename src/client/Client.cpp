@@ -11,25 +11,19 @@ void connectClient(int port, char *ip) {
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
     inet_pton(AF_INET, ip, &addr.sin_addr);
-    std::cout << port << "   " << ip << "   " << sck << std::endl;
 
     re = connect(sck, (sockaddr *)&addr, sizeof(addr));
     errorHandler(re, (char *)"Connecting failed");
-    std::cout << "4" << std::endl;
 }
 
-void communicate(std::string mess) {
+void communicate(char *mess) {
     char *buf = (char *)calloc(sizeof(char), MAX_MESSAGE_SIZE * 4);
-
-    send(sck, (char *)mess.c_str(), 0);
-    memset(buf, 0, MAX_MESSAGE_SIZE * 4);
+    send(sck, mess, 0);
     buf = receive(sck, buf, 0);
-    std::cout << "TEST" << buf << std::endl;
-
     if (buf != NULL) {
         std::cout << buf << std::endl;
     } else {
-        return;
+        free(buf);
     }
 }
 

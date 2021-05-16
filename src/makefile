@@ -3,7 +3,7 @@ CLIENT = client/Client.cpp client/InputParser.cpp
 HANDLERS = handlers/ErrorHandler.cpp 
 CC = gcc 
 OBJ_NAME_C = ../out/c
-FLAGS = -lstdc++
+FLAGS = -lstdc++ -lpthread
 
 all : compile_client
  

@@ -1,6 +1,6 @@
-rm ../out/s ../out/c
+rm ../out/c
 make
-# clear
+clear
 ../out/c
 # clear
 # gnome-terminal -- sh -c "../out/s; bash"
