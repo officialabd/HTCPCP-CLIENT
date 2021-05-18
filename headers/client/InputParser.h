@@ -13,15 +13,18 @@
 #define COFFEE "coffee"
 #define LOCALHOST "127.0.0.1"
 
+#define SUCCESSFUL 1
+#define BAD_URL 0
+
 /**
  * This function parse the client URL and maintain the request.
  * @param line String of the client URL.
  * @param message string of the request message.
  * @param port int port of the server.
  * @param ip string address of the server. 
- * @return String The response.
+ * @return int 1 on successful URI parsing and store the response in message, otherwise return 0 on error.
  */
-void parse(std::string line, char *message, char *port, char *ip);
+int parse(std::string line, char *message, char *port, char *ip);
 
 /**
  * This function prepares the client request with brew method.

@@ -1,6 +1,6 @@
 #include "../../headers/client/InputParser.h"
 
-void parse(std::string line, char *message, char *port, char *ip) {
+int parse(std::string line, char *message, char *port, char *ip) {
     char *method = (char *)calloc(1, 64);
     int potnum;
     std::string temp;
@@ -10,7 +10,7 @@ void parse(std::string line, char *message, char *port, char *ip) {
     getline(iss, temp, ':');
     if (strcasecmp(temp.c_str(), BREW) && strcasecmp(temp.c_str(), POST) && strcasecmp(temp.c_str(), PROPFIND) && strcasecmp(temp.c_str(), COFFEE)) {
         std::cout << "Invalid scheme" << std::endl;
-        return;
+        return BAD_URL;
     }
     strcpy(method, temp.c_str());
 
@@ -18,7 +18,7 @@ void parse(std::string line, char *message, char *port, char *ip) {
     getline(iss, temp, ':');
     if (strcmp(temp.substr(0, 2).c_str(), "//")) {
         std::cout << "Invalid URL" << std::endl;
-        return;
+        return BAD_URL;
     }
 
     // Parse the host ip
@@ -33,7 +33,9 @@ void parse(std::string line, char *message, char *port, char *ip) {
     // Parse the port
     getline(iss, temp, '/');
     strcpy(port, temp.c_str());
-
+    if (atoi(port) == 0) {
+        return BAD_URL;
+    }
     // Parse the pot number
     getline(iss, temp, '?');
 
@@ -57,14 +59,16 @@ void parse(std::string line, char *message, char *port, char *ip) {
     // Build the request
     if (!strcasecmp(method, BREW)) {
         brew(message, potnum, additions);
+        return SUCCESSFUL;
     } else if (!strcasecmp(method, POST)) {
         post(message, potnum, additions);
+        return SUCCESSFUL;
     } else if (!strcasecmp(method, PROPFIND)) {
         propfind(message, potnum, additions);
+        return SUCCESSFUL;
     } else {
         std::cout << "Method not supported" << std::endl;
-        message = NULL;
-        return;
+        return BAD_URL;
     }
 }
 

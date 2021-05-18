@@ -9,17 +9,15 @@
 
 #define EXIT "exit"
 #define DEBUG "d"
-#define MULTI "m"
 
 char *debug(int num);
-void *thread(void *arg);
 
 int main(int argc, char *argv[]) {
     char *port = (char *)calloc(1, 64);
     char *ip = (char *)calloc(1, 128);
     char *message = (char *)calloc(1, MAX_MESSAGE_SIZE * 4);
     int connected = 0;
-
+    int re = 0;
     std::cout << "\tHyper Text Coffee Pot\n"
               << "\t   WELCOME CLIENT\n"
               << "\t     coffee-scheme: [//host][/pot-designator][?additions-list]"
@@ -27,32 +25,35 @@ int main(int argc, char *argv[]) {
 
     while (true) {
         std::cout << "--------------------------------> (^-^): " << std::endl;
-        memset(message, 0, MAX_MESSAGE_SIZE * 4);
-        std::string line("");
 
+        memset(message, 0, MAX_MESSAGE_SIZE * 4);
+
+        std::string line("");
         getline(std::cin, line);
+
         if (!strcmp(line.c_str(), EXIT)) {  // If client enter exit then it will exit.
             closeSocket();
             break;
         } else if (!strcmp(line.substr(0, 1).c_str(), DEBUG)) {  // For debugging (d *)
             int num = atoi((line.c_str() + 2));
-            if (num < 6) {
+            if (num < 7) {
                 line = debug(num);
-                parse(line, message, port, ip);
+                re = parse(line, message, port, ip);
             } else {
                 strcpy(message, debug(num));
             }
         } else {  // when client enter uri
-            parse(line, message, port, ip);
+            re = parse(line, message, port, ip);
         }
-
-        if (!connected) {
-            connectClient(atoi(port), ip);  // connect to the server
-            connected = 1;
-        }
-        if (message != NULL) {
-            std::cout << "URI: " << line << std::endl;
-            communicate(message);  // Communicate with the server
+        if (re == SUCCESSFUL) {
+            if (!connected) {
+                connectClient(atoi(port), ip);  // connect to the server
+                connected = 1;
+            }
+            if (message != NULL) {
+                std::cout << "URI: " << line << std::endl;
+                communicate(message);  // Communicate with the server
+            }
         }
     }
 
@@ -64,7 +65,7 @@ char *debug(int num) {
         case -1:
             return (char *)"BREW://178.130.187.165:54000/1?";
         case 1:
-            return (char *)"BREW://127.0.0.1:9905/1?#Almond;2#Vanilla;5#almond;2";
+            return (char *)"BREW://127.0.0.1:9905/1?#Almond;2#Vanilla;5";
         case 2:
             return (char *)"BREW://127.0.0.1:9905/2?";
         case 3:
@@ -73,6 +74,8 @@ char *debug(int num) {
             return (char *)"POST://localhost:9905/2?#Almond;2#Vanilla;5#almond;2";
         case 5:
             return (char *)"PROPFIND://localhost:9905/";
+        case 6:
+            return (char *)"PROPFIND://localhost:9905/2";
         case 10:
             return (char *)"POT pot-1 HTCPCP/1.0\r\nAccept-Additions: \r\nContent-Type: message/coffeepot\r\nContent-Length: 0\r\n\r\nstart\r\n";
         case 11:
